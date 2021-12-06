@@ -134,7 +134,6 @@ class Swimming(Training):
         """рассчитывает среднюю скорость при плавании по формуле:
         длина_бассейна * count_pool / M_IN_KM / время_тренировки."""
 
-        # distance: float = self.get_distance()
         mean_speed: float = (
             self.length_pool * self.count_pool / self.M_IN_KM / self.duration
         )
@@ -167,10 +166,8 @@ def read_package(workout_type: str, data: list) -> Training:
 def main(training: Training) -> None:
     """Главная функция."""
 
-    #   print(type(training))
     info: InfoMessage = training.show_training_info()
-    data_str = info.get_message()
-    print(data_str)
+    print(info.get_message())
 
 
 if __name__ == '__main__':
