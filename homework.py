@@ -1,6 +1,30 @@
+from typing import Dict
+
+
 class InfoMessage:
     """Информационное сообщение о тренировке."""
-    pass
+
+    def __init__(self, training_type: str, duration: float, distance: float,
+                 speed: float, calories: float
+                 ) -> None:
+
+        self.training_type = training_type
+        self.duration = round(duration, 3)
+        self.distance = round(distance, 3)
+        self.speed = round(speed, 3)
+        self.calories = round(calories, 3)
+
+    def get_info_string(self) -> str:
+        """Формирует и возврящает строку о тренировке.
+        С округлением чисел до тысячной"""
+
+        info_string: str = f"Тип тренировки: {self.training_type}; "
+        f"Длительность: {self.duration} ч.; "
+        f"Дистанция: {self.distance} км; "
+        f"Ср. скорость: {self.speed} км/ч; "
+        f"Потрачено ккал: {self.calories}."
+
+        return info_string
 
 
 class Training:
@@ -52,8 +76,10 @@ class Running(Training):
         coeff_calorie_1: float = 18
         coeff_calorie_2: float = 20
         avg_speed: float = self.get_mean_speed()
-        spent_calories: float = (coeff_calorie_1 * avg_speed - coeff_calorie_2)
-        spent_calories *= self.weight / self.M_IN_KM * self.duration
+        spent_calories: float = (
+            (coeff_calorie_1 * avg_speed - coeff_calorie_2)
+            * (self.weight / self.M_IN_KM * self.duration)
+        )
         return spent_calories
 
 
@@ -63,7 +89,8 @@ class SportsWalking(Training):
     LEN_STEP: float = 0.65
 
     def __init__(self, action: int, duration: float,
-                 weight: float, height: float) -> None:
+                 weight: float, height: float
+                 ) -> None:
         super().__init__(action, duration, weight)
         self.height = height
 
@@ -75,9 +102,10 @@ class SportsWalking(Training):
         coeff_calorie_1: float = 0.035
         coeff_calorie_2: float = 0.029
         avg_speed: float = self.get_mean_speed()
-        spent_calories: float = coeff_calorie_1 * self.weight
-        spent_calories += (avg_speed**2 // self.height)
-        spent_calories *= coeff_calorie_2 * self.weight
+        spent_calories: float = (
+            coeff_calorie_1 * self.weight + (avg_speed**2 // self.height)
+            * coeff_calorie_2 * self.weight
+        )
         return spent_calories
 
 
@@ -86,19 +114,52 @@ class Swimming(Training):
 
     LEN_STEP: float = 1.38
 
-    def __init__(self, action: int, duration: float, weight: float) -> None:
+    def __init__(self, action: int, duration: float, weight: float,
+                 length_pool: float, count_pool: int) -> None:
         super().__init__(action, duration, weight)
-    pass
+        self.length_pool = length_pool
+        self.count_pool = count_pool
+
+    def get_mean_speed(self) -> float:
+        """рассчитывает среднюю скорость при плавании по формуле:
+        длина_бассейна * count_pool / M_IN_KM / время_тренировки."""
+
+        # distance: float = self.get_distance()
+        mean_speed: float = (
+            self.length_pool * self.count_pool / self.LEN_STEP / self.duration
+        )
+        return mean_speed
+
+    def get_spent_calories(self) -> float:
+        """Затрат калорий пли плавании: (средняя_скорость + 1.1) * 2 * вес."""
+
+        coeff_calorie_1: float = 1.1
+        coeff_calorie_2: float = 2
+        avg_speed: float = self.get_mean_speed()
+        spent_calories: float = (
+            (avg_speed + coeff_calorie_1) * coeff_calorie_2 * self.weight
+        )
+        return spent_calories
 
 
 def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
-    pass
+
+    train_code: Dict[str, object] = {
+        'SWM': Swimming,
+        'RUN': Running,
+        'WLK': Warning
+    }
+
+    train_class = train_code[workout_type](*data)
+    return train_class
 
 
 def main(training: Training) -> None:
     """Главная функция."""
-    pass
+
+    info: InfoMessage = training.show_training_info()
+    print(info.get_info_string())
 
 
 if __name__ == '__main__':
