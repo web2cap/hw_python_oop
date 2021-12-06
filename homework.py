@@ -1,4 +1,5 @@
 from typing import Dict
+#   , Type
 
 
 class InfoMessage:
@@ -9,20 +10,22 @@ class InfoMessage:
                  ) -> None:
 
         self.training_type = training_type
-        self.duration = round(duration, 3)
-        self.distance = round(distance, 3)
-        self.speed = round(speed, 3)
-        self.calories = round(calories, 3)
+        self.duration = duration    # round(duration, 3)
+        self.distance = distance    # round(distance, 3)
+        self.speed = speed  # round(speed, 3)
+        self.calories = calories    # round(calories, 3)
 
-    def get_info_string(self) -> str:
+    def get_message(self) -> str:
         """Формирует и возврящает строку о тренировке.
         С округлением чисел до тысячной"""
 
-        info_string: str = f"Тип тренировки: {self.training_type}; "
-        f"Длительность: {self.duration} ч.; "
-        f"Дистанция: {self.distance} км; "
-        f"Ср. скорость: {self.speed} км/ч; "
-        f"Потрачено ккал: {self.calories}."
+        info_string: str = (
+            f"Тип тренировки: {self.training_type}; " +
+            f"Длительность: {self.duration:.3f} ч.; " +
+            f"Дистанция: {self.distance:.3f} км; " +
+            f"Ср. скорость: {self.speed:.3f} км/ч; " +
+            f"Потрачено ккал: {self.calories:.3f}."
+        )
 
         return info_string
 
@@ -57,7 +60,14 @@ class Training:
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
-        pass
+
+        training_type = self.__class__.__name__
+        distance = self.get_distance()
+        speed = self.get_mean_speed()
+        calories = self.get_spent_calories()
+        info: InfoMessage = InfoMessage(training_type, self.duration,
+                                        distance, speed, calories)
+        return info
 
 
 class Running(Training):
@@ -148,18 +158,18 @@ def read_package(workout_type: str, data: list) -> Training:
     train_code: Dict[str, object] = {
         'SWM': Swimming,
         'RUN': Running,
-        'WLK': Warning
+        'WLK': SportsWalking
     }
 
-    train_class = train_code[workout_type](*data)
-    return train_class
+    return train_code[workout_type](*data)
 
 
 def main(training: Training) -> None:
     """Главная функция."""
 
+    #   print(type(training))
     info: InfoMessage = training.show_training_info()
-    print(info.get_info_string())
+    print(info.get_message())
 
 
 if __name__ == '__main__':
