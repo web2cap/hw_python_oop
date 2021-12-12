@@ -1,4 +1,4 @@
-from typing import Dict, Type, ClassVar
+from typing import Dict, List, Type, ClassVar
 from dataclasses import dataclass, asdict
 
 
@@ -145,7 +145,7 @@ class Swimming(Training):
         return spent_calories
 
 
-def read_package(workout_type: str, data: list['str', list[int]]) -> Training:
+def read_package(workout_type: str, data: List[int]) -> Training:
     """Прочитать данные полученные от датчиков.
     Если нет типа тренировки, переданного в workout_type, возбудить исключение,
     Если есть вернуть экземпляр нужного класса.
@@ -182,4 +182,3 @@ if __name__ == '__main__':
     for workout_type, data in packages:
         training = read_package(workout_type, data)
         main(training)
-#eof
