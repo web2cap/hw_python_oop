@@ -1,5 +1,5 @@
-from typing import Dict, List, Type, ClassVar
-from dataclasses import dataclass, asdict
+from typing import ClassVar, Dict, List, Type
+from dataclasses import asdict, dataclass
 
 
 @dataclass
@@ -150,24 +150,22 @@ def read_package(workout_type: str, data: List[int]) -> Training:
     Если нет типа тренировки, переданного в workout_type, возбудить исключение,
     Если есть вернуть экземпляр нужного класса.
     """
-
-    train_code: Dict[str, Type[Training]] = {
+    training_codes_and_classes_mapping: Dict[str, Type[Training]] = {
         'SWM': Swimming,
         'RUN': Running,
         'WLK': SportsWalking
     }
-    if workout_type in train_code.keys():
-        return train_code[workout_type](*data)
-    else:
-        raise KeyError(
-            "Вид тренировки с ключем '%s' не зарегистрирован в программе."
-            % (workout_type)
-        )
+    if workout_type in training_codes_and_classes_mapping:
+        return training_codes_and_classes_mapping[workout_type](*data)
+
+    raise KeyError(
+        "Вид тренировки с ключем '%s' не зарегистрирован в программе."
+        % (workout_type)
+    )
 
 
 def main(training: Training) -> None:
     """Главная функция."""
-
     info: InfoMessage = training.show_training_info()
     print(info.get_message())
 
